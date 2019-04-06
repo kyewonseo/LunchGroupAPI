@@ -138,4 +138,5 @@ package-lock.json
 #.iml
 bitweb.iml
 
-
+#dbconfig file
+configs/dbconfig.js

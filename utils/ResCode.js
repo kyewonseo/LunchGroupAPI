@@ -1,0 +1,12 @@
+var ResCode = {};
+
+ResCode.SUCCESS = 200;
+ResCode.FAIL = 400;
+ResCode.UNAUTHORIZED = 401;
+ResCode.FORBIDDEN = 403;
+ResCode.NOTFOUND = 404;
+ResCode.METHODNOTALLOWED = 405;
+ResCode.INTERNALSERVERERROR = 500;
+ResCode.SERVICEUNAVAILABLE = 503;
+
+module.exports = ResCode;
