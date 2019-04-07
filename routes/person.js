@@ -66,16 +66,33 @@ router.get('/name/:name', function (req, res, next) {
 router.post('/', function (req, res, next) {
 
     let data = req.body;
+    let userName = data.name;
 
-    db.connectDB()
-        .then(() => Person.create(data))
-        .then((result) => {
-            console.log('result=>', result);
-            SendRes.send(res, ResCode.SUCCESS, {data: result});
-        }).catch((err) => {
-        let message = err;
-        SendRes.send(res, ResCode.INTERNALSERVERERROR, {message: message});
-    })
+    if ((userName.length < 3) || (userName.length > 12)) {
+
+        let message = "User name must be between 3 and 12 characters."
+        SendRes.send(res, ResCode.FAIL, {message: message})
+    } else {
+        db.connectDB()
+            .then(() => Person.getPersonByName(userName))
+            .then((result) => {
+
+                if (result != null) {
+                    let message = "The same name exists!"
+                    SendRes.send(res, ResCode.FAIL, {message: message})
+                } else {
+
+                    Person.create(data)
+                        .then((result) => {
+                            console.log('result=>', result);
+                            SendRes.send(res, ResCode.SUCCESS, {data: result});
+                        })
+                }
+            }).catch((err) => {
+            let message = err;
+            SendRes.send(res, ResCode.INTERNALSERVERERROR, {message: message});
+        })
+    }
 });
 
 router.delete('/id/:personId', function (req, res, next) {
