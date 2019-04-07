@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var APIResponse = require('../utils/APIResponse');
 var ResCode = require('../utils/ResCode');
+var SendRes = require('../utils/SendRes');
 var db = require('../utils/db');
 var Users = require('../libs/users');
 
@@ -12,14 +12,10 @@ router.get('/', function (req, res, next) {
         .then(() => Users.getAll())
         .then((result) => {
             console.log('result=>', result);
-            APIResponse.code = ResCode.SUCCESS;
-            APIResponse.data = result;
-            res.send(APIResponse.create())
+            SendRes.send(res, ResCode.SUCCESS, {data: result});
 
         }).catch((err) => {
-        APIResponse.code = ResCode.INTERNALSERVERERROR;
-        APIResponse.data = err;
-        res.send(APIResponse.create())
+        SendRes.send(res, ResCode.INTERNALSERVERERROR, err);
     })
 });
 
@@ -30,19 +26,17 @@ router.get('/id/:userId', function (req, res, next) {
     db.connectDB()
         .then(() => Users.getUserById(userId))
         .then((result) => {
-            APIResponse.code = ResCode.SUCCESS;
-            APIResponse.data = result;
-            res.send(APIResponse.create())
+            SendRes.send(res, ResCode.SUCCESS, {data: result});
 
         }).catch((err) => {
         if (err.name == 'CastError') {
-            APIResponse.code = ResCode.FAIL;
-            APIResponse.message = "Check user id!";
-            res.status(ResCode.FAIL).send(APIResponse.create())
+            console.log('in')
+            let message = "Check user id!";
+            SendRes.send(res, ResCode.FAIL, {message: message});
+        } else {
+            let message = err;
+            SendRes.send(res, ResCode.INTERNALSERVERERROR, {message: message});
         }
-        APIResponse.code = ResCode.INTERNALSERVERERROR;
-        APIResponse.data = err;
-        res.send(APIResponse.create())
     })
 
 });
@@ -57,19 +51,15 @@ router.get('/name/:name', function (req, res, next) {
             console.log('result=>', result);
 
             if (result == null) {
-                APIResponse.code = ResCode.FAIL;
-                APIResponse.message = "Check user name!";
-                res.status(ResCode.FAIL).send(APIResponse.create())
+                let message = "Check user name!";
+                SendRes.send(res, ResCode.FAIL, {message: message});
             } else {
-                APIResponse.code = ResCode.SUCCESS;
-                APIResponse.data = result;
-                res.send(APIResponse.create())
+                SendRes.send(res, ResCode.SUCCESS, {data: result});
             }
 
         }).catch((err) => {
-        APIResponse.code = ResCode.INTERNALSERVERERROR;
-        APIResponse.data = err;
-        res.send(APIResponse.create())
+        let message = err;
+        SendRes.send(res, ResCode.INTERNALSERVERERROR, {message: message});
     })
 });
 
@@ -81,13 +71,10 @@ router.post('/', function (req, res, next) {
         .then(() => Users.create(data))
         .then((result) => {
             console.log('result=>', result);
-            APIResponse.code = ResCode.SUCCESS;
-            APIResponse.data = result;
-            res.send(APIResponse.create())
+            SendRes.send(res, ResCode.SUCCESS, {data: result});
         }).catch((err) => {
-        APIResponse.code = ResCode.INTERNALSERVERERROR;
-        APIResponse.data = err;
-        res.send(APIResponse.create())
+        let message = err;
+        SendRes.send(res, ResCode.INTERNALSERVERERROR, {message: message});
     })
 });
 
@@ -101,18 +88,14 @@ router.delete('/id/:userId', function (req, res, next) {
             console.log('result=>', result);
 
             if (result.deletedCount == 0) {
-                APIResponse.code = ResCode.FAIL;
-                APIResponse.message = "can't find user";
-                res.status(ResCode.FAIL).send(APIResponse.create())
+                let message = "can't find user";
+                SendRes.send(res, ResCode.FAIL, {message: message});
             } else {
-                APIResponse.code = ResCode.SUCCESS;
-                APIResponse.data = result;
-                res.send(APIResponse.create())
+                SendRes.send(res, ResCode.SUCCESS, {data: result});
             }
         }).catch((err) => {
-        APIResponse.code = ResCode.INTERNALSERVERERROR;
-        APIResponse.data = err;
-        res.send(APIResponse.create())
+        let message = err;
+        SendRes.send(res, ResCode.INTERNALSERVERERROR, {message: message});
     })
 });
 
@@ -126,18 +109,14 @@ router.delete('/name/:name', function (req, res, next) {
             console.log('result=>', result);
 
             if (result.deletedCount == 0) {
-                APIResponse.code = ResCode.FAIL;
-                APIResponse.message = "can't find user";
-                res.status(ResCode.FAIL).send(APIResponse.create())
+                let message = "can't find user";
+                SendRes.send(res, ResCode.FAIL, {message: message});
             } else {
-                APIResponse.code = ResCode.SUCCESS;
-                APIResponse.data = result;
-                res.send(APIResponse.create())
+                SendRes.send(res, ResCode.SUCCESS, {data: result});
             }
         }).catch((err) => {
-        APIResponse.code = ResCode.INTERNALSERVERERROR;
-        APIResponse.data = err;
-        res.send(APIResponse.create())
+        let message = err;
+        SendRes.send(res, ResCode.INTERNALSERVERERROR, {message: message});
     })
 });
 
