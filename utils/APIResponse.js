@@ -57,6 +57,13 @@ function createMessage(codeNumber, codeCause, data) {
             response.data = responseData;
             return response;
 
+        case ResCode.NOCONTENT :
+            message = "No Content" + cause;
+            response.responseStatus = codeNumber;
+            response.responseMessage = message;
+            response.data = responseData;
+            return response;
+
         case ResCode.FAIL :
             message = "Bad Request" + cause;
             response.responseStatus = codeNumber;

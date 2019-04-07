@@ -1,6 +1,7 @@
 var ResCode = {};
 
 ResCode.SUCCESS = 200;
+ResCode.NOCONTENT = 204;
 ResCode.FAIL = 400;
 ResCode.UNAUTHORIZED = 401;
 ResCode.FORBIDDEN = 403;

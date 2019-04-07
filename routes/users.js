@@ -17,7 +17,7 @@ router.get('/', function (req, res, next) {
             res.send(APIResponse.create())
 
         }).catch((err) => {
-        APIResponse.code = ResCode.FAIL;
+        APIResponse.code = ResCode.INTERNALSERVERERROR;
         APIResponse.data = err;
         res.send(APIResponse.create())
     })
@@ -26,23 +26,21 @@ router.get('/', function (req, res, next) {
 router.get('/id/:userId', function (req, res, next) {
 
     let userId = req.params.userId;
-    // if (userId == undefined) {
-    //     APIResponse.code = ResCode.FAIL;
-    //     APIResponse.data = "Check the userId!";
-    //     res.send(APIResponse.create())
-    //
-    // }
 
     db.connectDB()
         .then(() => Users.getUserById(userId))
         .then((result) => {
-            console.log('result=>', result);
             APIResponse.code = ResCode.SUCCESS;
             APIResponse.data = result;
             res.send(APIResponse.create())
 
         }).catch((err) => {
-        APIResponse.code = ResCode.FAIL;
+        if (err.name == 'CastError') {
+            APIResponse.code = ResCode.FAIL;
+            APIResponse.message = "Check user id!";
+            res.status(ResCode.FAIL).send(APIResponse.create())
+        }
+        APIResponse.code = ResCode.INTERNALSERVERERROR;
         APIResponse.data = err;
         res.send(APIResponse.create())
     })
@@ -57,12 +55,19 @@ router.get('/name/:name', function (req, res, next) {
         .then(() => Users.getUserByName(name))
         .then((result) => {
             console.log('result=>', result);
-            APIResponse.code = ResCode.SUCCESS;
-            APIResponse.data = result;
-            res.send(APIResponse.create())
+
+            if (result == null) {
+                APIResponse.code = ResCode.FAIL;
+                APIResponse.message = "Check user name!";
+                res.status(ResCode.FAIL).send(APIResponse.create())
+            } else {
+                APIResponse.code = ResCode.SUCCESS;
+                APIResponse.data = result;
+                res.send(APIResponse.create())
+            }
 
         }).catch((err) => {
-        APIResponse.code = ResCode.FAIL;
+        APIResponse.code = ResCode.INTERNALSERVERERROR;
         APIResponse.data = err;
         res.send(APIResponse.create())
     })
@@ -80,11 +85,60 @@ router.post('/', function (req, res, next) {
             APIResponse.data = result;
             res.send(APIResponse.create())
         }).catch((err) => {
-        APIResponse.code = ResCode.FAIL;
+        APIResponse.code = ResCode.INTERNALSERVERERROR;
         APIResponse.data = err;
         res.send(APIResponse.create())
     })
 });
 
+router.delete('/id/:userId', function (req, res, next) {
+
+    let userId = req.params.userId;
+
+    db.connectDB()
+        .then(() => Users.deleteUserById(userId))
+        .then((result) => {
+            console.log('result=>', result);
+
+            if (result.deletedCount == 0) {
+                APIResponse.code = ResCode.FAIL;
+                APIResponse.message = "can't find user";
+                res.status(ResCode.FAIL).send(APIResponse.create())
+            } else {
+                APIResponse.code = ResCode.SUCCESS;
+                APIResponse.data = result;
+                res.send(APIResponse.create())
+            }
+        }).catch((err) => {
+        APIResponse.code = ResCode.INTERNALSERVERERROR;
+        APIResponse.data = err;
+        res.send(APIResponse.create())
+    })
+});
+
+router.delete('/name/:name', function (req, res, next) {
+
+    let name = req.params.name;
+
+    db.connectDB()
+        .then(() => Users.deleteUserByName(name))
+        .then((result) => {
+            console.log('result=>', result);
+
+            if (result.deletedCount == 0) {
+                APIResponse.code = ResCode.FAIL;
+                APIResponse.message = "can't find user";
+                res.status(ResCode.FAIL).send(APIResponse.create())
+            } else {
+                APIResponse.code = ResCode.SUCCESS;
+                APIResponse.data = result;
+                res.send(APIResponse.create())
+            }
+        }).catch((err) => {
+        APIResponse.code = ResCode.INTERNALSERVERERROR;
+        APIResponse.data = err;
+        res.send(APIResponse.create())
+    })
+});
 
 module.exports = router;

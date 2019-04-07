@@ -67,14 +67,13 @@ exports.getUserByName = function (name) {
 
 exports.deleteUserById = function (id) {
     return new Promise((resolve, reject) => {
-        Users.findByIdAndRemove(
-            id,
+        Users.deleteOne(
+            {"_id":id},
             function (err, user) {
                 if (err) {
                     console.error(err)
                     reject(err)
                 }
-                console.log('deleteUserById done: ' + user)
                 resolve(user)
             }
         )
@@ -83,15 +82,14 @@ exports.deleteUserById = function (id) {
 
 exports.deleteUserByName = function (name) {
     return new Promise((resolve, reject) => {
-        Users.remove(
-            {
-                "name": name
-            }, function (err, res) {
+        Users.deleteOne(
+            {"name": name}
+            , function (err, user) {
                 if (err) {
                     console.error(err)
                     reject(err)
                 }
-                resolve()
+                resolve(user)
             });
     })
 }
