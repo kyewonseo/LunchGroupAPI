@@ -23,11 +23,11 @@ router.get('/', function (req, res, next) {
 router.post('/', function (req, res, next) {
 
     let data = req.body;
-    let minSizeGroup;   //그룹당 최소 사람 수
-    let numberOfGroup; //그룹의 수
+    let minSizeGroup = 2;   //그룹당 최소 사람 수
+    let numberOfGroup = 3; //그룹의 수
 
-    if(req.query.minSizeGroup == undefined) minSizeGroup = req.query.minSizeGroup ? minSizeGroup : 2;
-    if(req.query.numberOfGroup == undefined) numberOfGroup = req.query.numberOfGroup ? numberOfGroup : 3;
+    if(req.query.minSizeGroup != undefined) minSizeGroup = Number(req.query.minSizeGroup);
+    if(req.query.numberOfGroup != undefined) numberOfGroup = Number(req.query.numberOfGroup);
 
     /**
      * 1.전체 유저를 가져올때 섞어서 가져온다.
@@ -39,42 +39,54 @@ router.post('/', function (req, res, next) {
         .then(() => Person.getAll())
         .then((result) => {
             // console.log('result=>', result);
-            let personData = result;
-            let persons = util.shuffle(personData);
+            if (result.length < minSizeGroup * numberOfGroup) {
+                let message = "Check group count!";
+                SendRes.send(res, ResCode.FAIL, {message: message});
+            } else {
 
-            let group = [];
-            let remainGroup = [];
-            let subGroup = [];
+                let personData = result;
+                let persons = util.shuffle(personData);
 
-            persons.forEach(function (person, index, array) {
-                if (subGroup.length < minSizeGroup && group.length < numberOfGroup) {
-                    subGroup.push(person);
-                } else {
-                    if (subGroup.length >= minSizeGroup) {
-                        group.push({"persons":subGroup});
-                        subGroup = [];
+                let group = [];
+                let remainGroup = [];
+                let subGroup = [];
+
+                console.log('persons=>', persons.length)
+                console.log('req.query.minSizeGroup=>', minSizeGroup)
+                console.log('req.query.numberOfGroup=>', numberOfGroup)
+
+                persons.forEach(function (person, index, array) {
+
+                    if (group.length < numberOfGroup) {
+                        subGroup.push(person);
+                        if (subGroup.length % minSizeGroup == 0) {
+                            group.push({"persons": subGroup});
+                            subGroup = [];
+                        }
+                    } else {
+                        remainGroup.push(person);
                     }
-                    remainGroup.push(person);
-                }
-            })
+                })
 
-            remainGroup.forEach(function (person, index, array) {
-                let remainGroupIndex = Math.floor(Math.random() * numberOfGroup);
-                group[remainGroupIndex].persons.push(person)
-            })
 
-            console.log('group=>', group)
-            // SendRes.send(res, ResCode.SUCCESS, {data: group});
+                remainGroup.forEach(function (person, index, array) {
+                    let remainGroupIndex = Math.floor(Math.random() * numberOfGroup);
+                    group[remainGroupIndex].persons.push(person)
+                })
 
-            Group.insertBulk(group)
-                .then((result) => {
-                    console.log('result=>', result);
-                    SendRes.send(res, ResCode.SUCCESS, {data: result});
+                console.log('remainGroup=>', remainGroup.length)
+                console.log('group=>', group.length)
+                SendRes.send(res, ResCode.SUCCESS, {data: group});
 
-                }).catch((err) => {
-                SendRes.send(res, ResCode.INTERNALSERVERERROR, err);
-            })
+                Group.insertBulk(group)
+                    .then((result) => {
+                        console.log('result=>', result);
+                        SendRes.send(res, ResCode.SUCCESS, {data: result});
 
+                    }).catch((err) => {
+                    SendRes.send(res, ResCode.INTERNALSERVERERROR, err);
+                })
+            }
         }).catch((err) => {
         SendRes.send(res, ResCode.INTERNALSERVERERROR, err);
     })

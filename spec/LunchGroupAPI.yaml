@@ -1,0 +1,298 @@
+swagger: '2.0'
+info:
+  version: 0.0.1
+  title: LunchGroup API
+  contact:
+    email: kyewon76@gmail.com
+host: "localhost:3000"
+schemes:
+- http
+- https
+
+paths:
+  /v1/persons:
+    post:
+      tags:
+      - persons
+      summary: Added person info
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Content-Type
+        in: header
+        required: false
+        type: string
+      - in: body
+        name: PersonReq
+        required: true
+        schema:
+          $ref: '#/definitions/PersonReq'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/PersonRes'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorRes'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method Not Allowed
+        '500':
+          description: Internal Server Error
+    get:
+      tags:
+      - persons
+      summary: Get person info
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Content-Type
+        in: header
+        required: false
+        type: string
+      
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/PersonRes'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorRes'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method Not Allowed
+        '500':
+          description: Internal Server Error
+          
+  '/v1/persons/id/{personId}':
+    delete:
+      tags:
+      - persons
+      summary: Delete person
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: personId
+        in: path
+        description: Get auto id in mongodb
+        required: true
+        type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/DeleteRes'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method Not Allowed
+        '500':
+          description: Internal Server Error
+          
+  '/v1/persons/name/{name}':
+    delete:
+      tags:
+      - persons
+      summary: Delete person
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: name
+        in: path
+        description: "person name"
+        required: true
+        type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/DeleteRes'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method Not Allowed
+        '500':
+          description: Internal Server Error
+      
+  '/v1/groups':
+    post:
+      tags:
+      - groups
+      summary: "사람들을 무작위로 그룹으로 나눈다"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Content-Type
+        in: header
+        required: false
+        type: string
+      - in: body
+        name: GroupReq
+        required: true
+        schema:
+          $ref: '#/definitions/GroupReq'
+      responses:
+        '200': 
+          description: successful operation
+          schema:
+            $ref: '#/definitions/GroupRes'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorRes'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method Not Allowed
+        '500':
+          description: Internal Server Error
+          
+    get:
+      tags:
+      - groups
+      summary: Get all group
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: Content-Type
+        in: header
+        required: false
+        type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/GroupRes'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorRes'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '405':
+          description: Method Not Allowed
+        '500':
+          description: Internal Server Error
+          
+definitions:
+  DeleteRes:
+    type: object
+    properties:
+      responseStatus:
+        type: integer
+        description: 확인 코드
+      responseMsg:
+        type: string
+        description: 응답 메시지
+  ErrorRes:
+    type: object
+    properties:
+      responseStatus:
+        type: integer
+        description: 실패 코드
+      responseMsg:
+        type: string
+        description: 실패 이유
+  PersonReq:
+    type: object
+    properties:
+      name:
+        type: string
+        description: "이름"
+            
+  PersonRes:
+    type: object
+    properties:
+      responseStatus:
+        type: integer
+        description: 성공여부
+      responseMsg:
+        type: string
+        description: 응답 메시지
+      data:
+        type: object
+        properties:
+          _id:
+            type: string
+            description: "생성된 person id"
+          name:
+            type: string
+            description: "이름"
+            
+  GroupReq:
+    type: object
+    properties:
+      minSizeGroup:
+        type: string
+        description: "그룹당 최소 사람 수"
+      numberOfGroup:
+        type: string
+        description: "그룹의 수"
+        
+  GroupRes:
+    type: object
+    properties:
+      responseStatus:
+        type: integer
+        description: 성공여부
+      responseMsg:
+        type: string
+        description: 응답 메시지
+      data:
+        type: array
+        items:
+          type: object
+          properties:
+            _id:
+              type: string
+              description: "생성된 group id"
+            name:
+              type: string
+              description: "그룹이름"
+            persons:
+              type: array
+              items:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    description: "생성된 person id"
+                  name:
+                    type: string
+                    description: "이름"
+                
+
