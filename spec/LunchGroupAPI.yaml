@@ -4,7 +4,7 @@ info:
   title: LunchGroup API
   contact:
     email: kyewon76@gmail.com
-host: "localhost:3000"
+host: "localhost:3333"
 schemes:
 - http
 
