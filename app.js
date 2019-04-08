@@ -3,11 +3,13 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var handler = require('./utils/handler');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var personsRouter = require('./routes/person');
 var groupsRouter = require('./routes/group');
+var authsRouter = require('./routes/auth');
 
 var app = express();
 
@@ -32,9 +34,10 @@ app.use(function (req, res, next) {
 //backend API
 let version = "/v1";
 app.use('/', indexRouter);
-app.use(version + '/users', usersRouter);
-app.use(version + '/persons', personsRouter);
-app.use(version + '/groups', groupsRouter);
+app.use(version + '/users', handler.token, usersRouter);
+app.use(version + '/persons', handler.token, personsRouter);
+app.use(version + '/groups', handler.token, groupsRouter);
+app.use(version + '/auths', authsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

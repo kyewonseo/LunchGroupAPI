@@ -7,9 +7,48 @@ info:
 host: "localhost:3000"
 schemes:
 - http
-- https
 
 paths:
+  /v1/auths/token:
+    post:
+      tags:
+      - auths
+      summary: "로그인을 대신하여 보안처리를 위한 access token 발행"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/TokenRes'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorRes'
+        '500':
+          description: Internal Server Error
+    get:
+      tags:
+      - auths
+      summary: "로그인을 대신하여 보안처리를 위한 access token 발행"
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/TokenRes'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorRes'
+        '500':
+          description: Internal Server Error
+
   /v1/persons:
     post:
       tags:
@@ -59,7 +98,7 @@ paths:
         in: header
         required: false
         type: string
-      
+
       responses:
         '200':
           description: successful operation
@@ -77,7 +116,7 @@ paths:
           description: Method Not Allowed
         '500':
           description: Internal Server Error
-          
+
   '/v1/persons/id/{personId}':
     delete:
       tags:
@@ -108,7 +147,7 @@ paths:
           description: Method Not Allowed
         '500':
           description: Internal Server Error
-          
+
   '/v1/persons/name/{name}':
     delete:
       tags:
@@ -139,7 +178,7 @@ paths:
           description: Method Not Allowed
         '500':
           description: Internal Server Error
-      
+
   '/v1/groups':
     post:
       tags:
@@ -150,17 +189,18 @@ paths:
       produces:
       - application/json
       parameters:
-      - name: Content-Type
-        in: header
+      - name: minSizeGroup
+        in: query
+        description: 'default minSizeGroup=2'
         required: false
-        type: string
-      - in: body
-        name: GroupReq
-        required: true
-        schema:
-          $ref: '#/definitions/GroupReq'
+        type: number
+      - name: numberOfGroup
+        in: query
+        description: 'default numberOfGroup=3'
+        required: false
+        type: number
       responses:
-        '200': 
+        '200':
           description: successful operation
           schema:
             $ref: '#/definitions/GroupRes'
@@ -176,7 +216,7 @@ paths:
           description: Method Not Allowed
         '500':
           description: Internal Server Error
-          
+
     get:
       tags:
       - groups
@@ -207,7 +247,7 @@ paths:
           description: Method Not Allowed
         '500':
           description: Internal Server Error
-          
+
 definitions:
   DeleteRes:
     type: object
@@ -227,13 +267,27 @@ definitions:
       responseMsg:
         type: string
         description: 실패 이유
+
+  TokenRes:
+    type: object
+    properties:
+      responseStatus:
+        type: integer
+        description: 확인 코드
+      responseMsg:
+        type: string
+        description: 응답 메시지
+      data:
+        type: string
+        description: "이름"
+
   PersonReq:
     type: object
     properties:
       name:
         type: string
         description: "이름"
-            
+
   PersonRes:
     type: object
     properties:
@@ -252,17 +306,17 @@ definitions:
           name:
             type: string
             description: "이름"
-            
+
   GroupReq:
     type: object
     properties:
       minSizeGroup:
-        type: string
+        type: number
         description: "그룹당 최소 사람 수"
       numberOfGroup:
-        type: string
+        type: number
         description: "그룹의 수"
-        
+
   GroupRes:
     type: object
     properties:
@@ -294,5 +348,5 @@ definitions:
                   name:
                     type: string
                     description: "이름"
-                
+
 
