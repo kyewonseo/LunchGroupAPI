@@ -38,7 +38,6 @@ router.post('/', function (req, res, next) {
     db.connectDB()
         .then(() => Person.getAll())
         .then((result) => {
-            // console.log('result=>', result);
             if (result.length < minSizeGroup * numberOfGroup) {
                 let message = "Check group count!";
                 SendRes.send(res, ResCode.FAIL, {message: message});
@@ -50,10 +49,6 @@ router.post('/', function (req, res, next) {
                 let group = [];
                 let remainGroup = [];
                 let subGroup = [];
-
-                console.log('persons=>', persons.length)
-                console.log('req.query.minSizeGroup=>', minSizeGroup)
-                console.log('req.query.numberOfGroup=>', numberOfGroup)
 
                 persons.forEach(function (person, index, array) {
 
@@ -68,12 +63,10 @@ router.post('/', function (req, res, next) {
                     }
                 })
 
-
                 remainGroup.forEach(function (person, index, array) {
                     let remainGroupIndex = Math.floor(Math.random() * numberOfGroup);
                     group[remainGroupIndex].persons.push(person)
                 })
-
 
                 Group.deleteGroupAll()
                     .then((result) => {
@@ -92,92 +85,6 @@ router.post('/', function (req, res, next) {
             }
         }).catch((err) => {
         SendRes.send(res, ResCode.INTERNALSERVERERROR, err);
-    })
-});
-
-router.get('/id/:groupId', function (req, res, next) {
-
-    let groupId = req.params.groupId;
-
-    db.connectDB()
-        .then(() => Group.getGroupById(groupId))
-        .then((result) => {
-            SendRes.send(res, ResCode.SUCCESS, {data: result});
-
-        }).catch((err) => {
-        if (err.name == 'CastError') {
-            console.log('in')
-            let message = "Check group id!";
-            SendRes.send(res, ResCode.FAIL, {message: message});
-        } else {
-            let message = err;
-            SendRes.send(res, ResCode.INTERNALSERVERERROR, {message: message});
-        }
-    })
-
-});
-
-router.get('/name/:name', function (req, res, next) {
-
-    let name = req.params.name;
-
-    db.connectDB()
-        .then(() => Group.getGroupByName(name))
-        .then((result) => {
-            console.log('result=>', result);
-
-            if (result == null) {
-                let message = "Check group name!";
-                SendRes.send(res, ResCode.FAIL, {message: message});
-            } else {
-                SendRes.send(res, ResCode.SUCCESS, {data: result});
-            }
-
-        }).catch((err) => {
-        let message = err;
-        SendRes.send(res, ResCode.INTERNALSERVERERROR, {message: message});
-    })
-});
-
-router.delete('/id/:groupId', function (req, res, next) {
-
-    let groupId = req.params.groupId;
-
-    db.connectDB()
-        .then(() => Group.deleteGroupById(groupId))
-        .then((result) => {
-            console.log('result=>', result);
-
-            if (result.deletedCount == 0) {
-                let message = "can't find group";
-                SendRes.send(res, ResCode.FAIL, {message: message});
-            } else {
-                SendRes.send(res, ResCode.SUCCESS, {data: result});
-            }
-        }).catch((err) => {
-        let message = err;
-        SendRes.send(res, ResCode.INTERNALSERVERERROR, {message: message});
-    })
-});
-
-router.delete('/name/:name', function (req, res, next) {
-
-    let name = req.params.name;
-
-    db.connectDB()
-        .then(() => Group.deleteGroupByName(name))
-        .then((result) => {
-            console.log('result=>', result);
-
-            if (result.deletedCount == 0) {
-                let message = "can't find group";
-                SendRes.send(res, ResCode.FAIL, {message: message});
-            } else {
-                SendRes.send(res, ResCode.SUCCESS, {data: result});
-            }
-        }).catch((err) => {
-        let message = err;
-        SendRes.send(res, ResCode.INTERNALSERVERERROR, {message: message});
     })
 });
 

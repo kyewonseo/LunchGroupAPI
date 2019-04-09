@@ -30,7 +30,6 @@ router.get('/id/:personId', function (req, res, next) {
 
         }).catch((err) => {
         if (err.name == 'CastError') {
-            console.log('in')
             let message = "Check person id!";
             SendRes.send(res, ResCode.FAIL, {message: message});
         } else {

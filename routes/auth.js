@@ -5,7 +5,6 @@ var dbConfig = require('../configs/dbConfig');
 var ResCode = require('../utils/ResCode');
 var SendRes = require('../utils/SendRes');
 var db = require('../utils/db');
-var Users = require('../libs/users');
 
 router.post('/token', function (req, res, next) {
 
