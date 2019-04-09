@@ -9,10 +9,8 @@ exports.token = (req, res, next) => {
     // let token = req.headers['x-access-token'] || req.query.token;
 
     let guest = req.cookies.guest;
-    console.log('guest =>', guest);
 
     if (!guest) {
-
         let message = "you need access token! use /v1/auths/token Post API";
         SendRes.send(res, ResCode.UNAUTHORIZED, {message: message});
 
@@ -20,14 +18,22 @@ exports.token = (req, res, next) => {
 
         let key = dbConfig.jwt.key;
         let secret = dbConfig.jwt.secret;
-        let token = jwt.verify(guest, secret);
 
-        if (token.data != key) {
-            let message = "Check alright access token!";
+        try {
+            let token = jwt.verify(guest, secret);
+
+            if (token.data != key) {
+                let message = "Check alright access token!";
+                SendRes.send(res, ResCode.UNAUTHORIZED, {message: message});
+            } else {
+                next();
+            }
+        } catch (err) {
+            let message = "Check alright access token! (jwt expired)";
             SendRes.send(res, ResCode.UNAUTHORIZED, {message: message});
-        } else {
-            next();
         }
+
+
     }
 
 };

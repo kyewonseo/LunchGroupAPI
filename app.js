@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var handler = require('./utils/handler');
+var swaggerUi = require('swagger-ui-express');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -34,6 +35,8 @@ app.use(function (req, res, next) {
 //backend API
 let version = "/v1";
 app.use('/', indexRouter);
+const spec = require('./spec/swagger.json');
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(spec));
 app.use(version + '/users', handler.token, usersRouter);
 app.use(version + '/persons', handler.token, personsRouter);
 app.use(version + '/groups', handler.token, groupsRouter);
