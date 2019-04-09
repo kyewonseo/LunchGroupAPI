@@ -87,12 +87,6 @@
         ],
         "parameters": [
           {
-            "name": "Content-Type",
-            "in": "header",
-            "required": false,
-            "type": "string"
-          },
-          {
             "in": "body",
             "name": "PersonReq",
             "required": true,
@@ -138,14 +132,6 @@
         ],
         "produces": [
           "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "Content-Type",
-            "in": "header",
-            "required": false,
-            "type": "string"
-          }
         ],
         "responses": {
           "200": {
@@ -332,14 +318,6 @@
         ],
         "produces": [
           "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "Content-Type",
-            "in": "header",
-            "required": false,
-            "type": "string"
-          }
         ],
         "responses": {
           "200": {

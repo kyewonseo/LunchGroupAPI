@@ -82,6 +82,20 @@ exports.getGroupByName = function (name) {
     })
 }
 
+exports.deleteGroupAll = function () {
+    return new Promise((resolve, reject) => {
+        Group.remove(
+            {}
+            , function (err, group) {
+                if (err) {
+                    console.error(err)
+                    reject(err)
+                }
+                resolve(group)
+            });
+    })
+}
+
 exports.deleteGroupById = function (id) {
     return new Promise((resolve, reject) => {
         Group.deleteOne(

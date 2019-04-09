@@ -26,8 +26,8 @@ router.post('/', function (req, res, next) {
     let minSizeGroup = 2;   //그룹당 최소 사람 수
     let numberOfGroup = 3; //그룹의 수
 
-    if(req.query.minSizeGroup != undefined) minSizeGroup = Number(req.query.minSizeGroup);
-    if(req.query.numberOfGroup != undefined) numberOfGroup = Number(req.query.numberOfGroup);
+    if (req.query.minSizeGroup != undefined) minSizeGroup = Number(req.query.minSizeGroup);
+    if (req.query.numberOfGroup != undefined) numberOfGroup = Number(req.query.numberOfGroup);
 
     /**
      * 1.전체 유저를 가져올때 섞어서 가져온다.
@@ -74,18 +74,21 @@ router.post('/', function (req, res, next) {
                     group[remainGroupIndex].persons.push(person)
                 })
 
-                console.log('remainGroup=>', remainGroup.length)
-                console.log('group=>', group.length)
-                SendRes.send(res, ResCode.SUCCESS, {data: group});
 
-                Group.insertBulk(group)
+                Group.deleteGroupAll()
                     .then((result) => {
-                        console.log('result=>', result);
-                        SendRes.send(res, ResCode.SUCCESS, {data: result});
+                        // console.log('result=>', result);
+                        Group.insertBulk(group)
+                            .then((result) => {
+                                console.log('result=>', result);
+                                SendRes.send(res, ResCode.SUCCESS, {data: result});
 
+                            }).catch((err) => {
+                            SendRes.send(res, ResCode.INTERNALSERVERERROR, err);
+                        })
                     }).catch((err) => {
                     SendRes.send(res, ResCode.INTERNALSERVERERROR, err);
-                })
+                });
             }
         }).catch((err) => {
         SendRes.send(res, ResCode.INTERNALSERVERERROR, err);
