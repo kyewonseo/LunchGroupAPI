@@ -10,8 +10,27 @@ var DB_URI = 'mongodb://' + MONGODB_URL + '/' + DB_FILE;
 mongoose.Promise = global.Promise;
 mongoose.set('debug, true');
 
-function connect () {
-    console.log("url = " + DB_URI);
+// function connect () {
+//     console.log("url = " + DB_URI);
+//     return new Promise((resolve, reject) => {
+//         if (mongoose.connection.readyState) {
+//             console.log('reuse connection')
+//             resolve(mongoose.connection)
+//         } else {
+//             console.log('new connection')
+//             mongoose.connect(DB_URI, { useNewUrlParser: true })
+//                 .then( (connection) => {
+//                     resolve(connection)
+//                 })
+//                 .catch( (err) => {
+//                     console.error(err)
+//                     reject(err)
+//                 })
+//         }
+//     })
+// }
+
+exports.connectDB = function () {
     return new Promise((resolve, reject) => {
         if (mongoose.connection.readyState) {
             console.log('reuse connection')
@@ -27,16 +46,6 @@ function connect () {
                     reject(err)
                 })
         }
-    })
-}
-
-exports.connectDB = function () {
-    return new Promise((resolve, reject) => {
-        connect().then( function (connection) {
-            resolve(connection)
-        }).catch( function (error) {
-            reject(error)
-        })
     })
 }
 
